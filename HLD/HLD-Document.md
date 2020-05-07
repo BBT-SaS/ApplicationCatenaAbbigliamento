@@ -4,7 +4,7 @@ Di solito le applicazioni di questo genere sono distribuite in vari Tier. Per ma
 Per ridurre al minimo i costi hardware e per rispettare le richieste del cliente, si è preso in considerazione la suddivisione **Two Tier**, ovvero suddividere in due macchine i tre livelli applicativi. Nelle macchine e nei terminali dei negozi verrà installato un **thin client** progettato preferibilmente nel OOPL(Object Oriented Programming Language) Java. A lato server, invece, verranno supportati i livelli di logica applicativa e di accesso ai dati. Questo permetterà al front-end di incidere al minimo sulle prestazioni sul singolo host.
 
 ## Struttura a blocchi
-![HLD-clothamatic](https://user-images.githubusercontent.com/43414688/81339374-5ac83180-90ae-11ea-9872-9f992fb98bde.png)
+![HLD-clothamatic](https://user-images.githubusercontentgit.com/43414688/81339374-5ac83180-90ae-11ea-9872-9f992fb98bde.png)
 
 
 
@@ -12,8 +12,8 @@ Per ridurre al minimo i costi hardware e per rispettare le richieste del cliente
 
 Verrà costruita un'architettura di tipo client/server. Questa scelta rispetto alla più semplice pagina web dinamica permetterà di evitare attacchi da parte di malintenzionati presenti su Internet. La GUI verrà distribuita fra i manager di ogni filiale, a cui sarà affidata la responsabilità di distribuire fra i subordinati il software client.
 
-**Tra le due macchine bisognerà stabilire un protocollo di comunicazione affidabile e che previene ogni perdita di dati**. L'intero team BBT SaS sarà responsabile della stesura del LLD Document per i protocolli di comunicazione
 ## Front-end
+
 Dovrà essere:
 * Il più user-friendly possibile;
 * Suddiviso in due categorie: _lato dipendenti_ e _lato clienti_;
@@ -38,12 +38,15 @@ All'avvio dell'applicazione, che sarà avviata ogni mattina, bisognerà **verifi
 Questa sezione dovrà avere privilegi in più, perciò dovrà essere progettata in maniera minuziosa. Le credenziali di accesso al server dovranno essere criptate, ma si procede a parlarne nella sezione _Protocolli di comunicazione_.
 Le credenziale potranno essere recuperate attraverso un apposito link che ridirezione l'utente a una pagina dove saranno chieste delle informazioni riservate. **Questa parte del front-end deve essere utilizzata solo connessi a una rete internet**. È necessario ricordare all'utente, qualora sia offline, di connettersi a una rete. **Questo controllo è da fare all'avvio dell'applicazione**.
 
-**Bufalo Fabio** sarà leader dello sviluppo, e si occuperà della stesura del documento LLD.
+**Trocchio Lorenzo** sarà leader dello sviluppo, e si occuperà della stesura del documento LLD.
 
 ## Back-end
 
 
 Comprenderà il middleware e il back-end, con accesso a un DataBase integrato.
+
+### Middle-tier
+
 Il software che accederà ai dati e risponderà alle risposte del client dovrà essere:
 * Sviluppato attraverso un linguaggio platform-independent, preferibilmente Java;
 * Ottimizzato nei tempi di risposta;
@@ -53,8 +56,23 @@ Il software che accederà ai dati e risponderà alle risposte del client dovrà 
 * Corredato da manuali e formazione;
 * Testato in ogni sua funzionalità;
 
-La leadership dello sviluppo del back-end verrà affidato a **Bafunno Lorenzo**.
+Il server dovrà essere disponibile negli orari lavorativi, e lo stesso dovrà ricevere molte richieste, quindi dovrà gestire molte richieste nello stesso momento. Lo sviluppo dovrà implementare perciò un **sistema di multi-threading** per compiere il lavoro simultaneamente. Allo stesso tempo, dovrà impedire alle molte richieste di generare inconsistenza dei dati, perciò dovrà implementare un **sistema di lock delle risorse**: la soluzione migliore sarebbe usare i monitor.
 
-## Protocolli di comunicazione
-Per poter permettere al client di comunicare con il server e viceversa, è necessario che si instauri una connessione sicura fra i due host. Si escludono con questi criteri i protocolli UDP, HTTP. La soluzione migliore sarebbe utilizzare dei **socket TCP** per la sua _affidabilità, sicurezza e scalabilità_.
+### Database
+
+Si preferisce un database relazionale, dato che il DBMS agevola il compito dello script, monitorando egli stesso l'integrità e la consistenza dei dati. Si presume che i dati non siano di grande dimensione. Soltanto la creazione del database e delle tabelle saranno scritte a mano, per il resto l'inserimento, la cancellazione e la modifica dei dati sarà gestita dal server-side script.
+
+**È necessario che le funzioni siano testati più volte per avere la sicurezza del loro funzionamento ottimale**.
+
+**Bafunno Lorenzo** sarà leader dello sviluppo back-end, e si occuperà della stesura del documento LLD.
+
+## Protocolli di comunicazione e sicurezza
+
+### Sicurezza
+
+Per poter permettere al client di comunicare con il server e viceversa, è necessario che si instauri una connessione sicura fra i due host. Oltre al protocollo affidabile TCP, è necessario cifrare i dati come credenziali e dati personali dei clienti. Data la semplicità dell'architettura, verrà usata un algoritmo di hash (**sha-256**), che otterrà l'effetto di avvertire i due capi della connessione se il messaggio è stato aperto da qualcun altro, e anche se il mittente è quello giusto.
+
+### Protocolli di comunicazione
+
+Il TCP è la soluzione affidabile necessaria a questa architettura. Dato che si possono aprire più socket contemporaneamente, ed essi identificano univocamente il client con cui si parla, il server può registrare gli IP da cui provengono i pacchetti, e **se il pacchetto non possiede l'hash giusto (quindi il mittente è falso), può ignorarlo e mettere l'host in una blacklist**.
 
