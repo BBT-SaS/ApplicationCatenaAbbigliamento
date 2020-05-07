@@ -7,6 +7,7 @@ Il progetto, inizialmente di GPO, unisce le competenze specifiche acquisite in I
 
 Dopo aver ascoltato la richiesta di vari clienti, abbiamo preso in considerazione la proposta di **Challengers Software, composto da Andrei Gradinaru, Gianluca Bozzo e Alessandro Benvenuti**, di realizzare un DataBase centralizzato per lo storage dei capi di abbigliamento.
 
+
 _Più dettagli nella Wiki, che comprende il documento iniziale ([Project Charter](https://github.com/BBT-SaS/ApplicationCatenaAbbigliamento/wiki/Project-Charter)) e le varie [riunioni con Challengers Software](https://github.com/BBT-SaS/ApplicationCatenaAbbigliamento/wiki/Riunioni-con-Challengers-Software)._
 
 
