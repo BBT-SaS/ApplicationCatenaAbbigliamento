@@ -4,7 +4,7 @@ Di solito le applicazioni di questo genere sono distribuite in vari Tier. Per ma
 Per ridurre al minimo i costi hardware e per rispettare le richieste del cliente, si è preso in considerazione la suddivisione **Two Tier**, ovvero suddividere in due macchine i tre livelli applicativi. Nelle macchine e nei terminali dei negozi verrà installato un **thin client** progettato preferibilmente nel OOPL(Object Oriented Programming Language) Java. A lato server, invece, verranno supportati i livelli di logica applicativa e di accesso ai dati. Questo permetterà al front-end di incidere al minimo sulle prestazioni sul singolo host.
 
 ## Struttura a blocchi
-![HLD-clothamatic](https://user-images.githubusercontentgit.com/43414688/81339374-5ac83180-90ae-11ea-9872-9f992fb98bde.png)
+![HLD-clothamatic](https://user-images.githubusercontent.com/43414688/81342986-7a625880-90b4-11ea-976c-b39ce38ca7e1.png)
 
 
 
