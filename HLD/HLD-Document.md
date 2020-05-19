@@ -76,3 +76,22 @@ Per poter permettere al client di comunicare con il server e viceversa, è neces
 
 Il TCP è la soluzione affidabile necessaria a questa architettura. Dato che si possono aprire più socket contemporaneamente, ed essi identificano univocamente il client con cui si parla, il server può registrare gli IP da cui provengono i pacchetti, e **se il pacchetto non possiede l'hash giusto (quindi il mittente è falso), può ignorarlo e mettere l'host in una blacklist**.
 
+Per poter comunicare e potersi accertare che il mittente sia valido, client e server devono stabilire delle specifiche stringhe note soltanto ai due. Queste stringhe saranno scritte nei rispettivi documenti LLD, ma in generale dovranno consistere in:
+
+**Client Side**
+
+* **Stringa ID della richiesta**: permette al server di riconoscere per cosa il client sta contattando il server (inserimento, prenotazione, modifica, etc.);
+* **Stringa ID univoca del pacchetto (generata casualmente)**: permette al server di controllare questa stringa con altre di pacchetti già ricevuta, in modo da evitare un eventuale attacco di camuffamento dei pacchetti.
+
+* **Stringhe username e password dipendenti (solo lato dipendenti)**: ovviamente questa string adovrà essere crittografata così che malintenzionati esterni non possano carpirli.
+
+* **Stringhe dati personali cliente**: ovviamente questa string adovrà essere crittografata così che malintenzionati esterni non possano carpirli.
+
+**Server Side**
+
+* **Stringa di ACK**: per far sapere al client che la richiesta è stata verificata e sta venendo processata.
+* **Stringa di OK**: per far sapere al client che la richiesta è andata a buon fine.
+* **Stringa di errore**: per far sapere al client che la richiesta è errata oppure che ci sono stati errori durante il processo. Se è un problema di dati, bisognerebbe far sapere al client che tipo di errore è.
+
+Il middle-tier negozierà le trasmissione fra DBMS e client, facendo accedere al DB soltanto ai dipendenti autorizzati.
+
