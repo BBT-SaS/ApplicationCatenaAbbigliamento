@@ -87,6 +87,8 @@ Per poter comunicare e potersi accertare che il mittente sia valido, client e se
 
 * **Stringhe dati personali cliente**: ovviamente questa string adovrà essere crittografata così che malintenzionati esterni non possano carpirli.
 
+* **Stringa di annullamento della richiesta**: per i casi in cui la richiesta richiede tempo e si preferisce annullare il processo. Dovrà specificare quale richiesta, quindi attraverso l'ID richiesta, deve essere annullata.
+
 **Server Side**
 
 * **Stringa di ACK**: per far sapere al client che la richiesta è stata verificata e sta venendo processata.
@@ -95,3 +97,4 @@ Per poter comunicare e potersi accertare che il mittente sia valido, client e se
 
 Il middle-tier negozierà le trasmissione fra DBMS e client, facendo accedere al DB soltanto ai dipendenti autorizzati.
 
+* **Stringa richiesta dettagli aggiuntivi**: necessaria per la richiesta di recupero username e password o anche del ripristino.
