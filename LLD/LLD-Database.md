@@ -4,4 +4,17 @@
 
 Il diagramma E/R raffigurato mostra la struttura generale del database. Questo può essere tradotto in tabelle nel seguente modo:
 
-* Prodotti(<ins>IDProdotto</ins>)
+* Prodotti(<ins>IDProdotto</ins>, Sesso _(può essere null)_ Tipo, Taglia _(può essere null)_, Prezzo, Colore, Costo, Materiale, ImageURL, Negozio (FK));
+* Clienti (<ins>IDCliente</ins>, E-mail, Nome, Cognome, Indirizzo, Città, CAP);
+* ProdottiPrenotati(<ins>IDProdotto, IDCliente</ins>, DataPrenotazione);
+* Negozi (<ins> Indirizzo, Città</ins>, CAP);
+* Dipendenti(<ins>Matricola</ins>, Nome, Cognome, E-mail, Username, Password);
+
+L'associazione fra Prodotti e Clienti è stata gestita in questo modo in quanto nessuno dei due aveva obbligatorietà nell'associazione e questo metodo risulta il più affidabile.
+
+Ipotesi aggiuntive considerate nel processo di realizzazione:
+
+* **Ogni dipendendente avrà accesso al DataBase**
+* **Ogni prodotto avrà sempre associato un'immagine**
+* **Username e password dei dipendenti saranno stringhe cifrate**
+
