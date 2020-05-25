@@ -70,24 +70,42 @@ Si preferisce un database relazionale, dato che il DBMS agevola il compito dello
 
 ### Sicurezza
 
-Per poter permettere al client di comunicare con il server e viceversa, è necessario che si instauri una connessione sicura fra i due host. Oltre al protocollo affidabile TCP, è necessario cifrare i dati come credenziali e dati personali dei clienti. Data la semplicità dell'architettura, verrà usata un algoritmo di hash (**sha-256**), che otterrà l'effetto di avvertire i due capi della connessione se il messaggio è stato aperto da qualcun altro, e anche se il mittente è quello giusto.
+Per poter permettere al client di comunicare con il server e viceversa, è necessario che si instauri una connessione sicura fra i due host. Oltre al protocollo affidabile TCP, è necessario cifrare i dati come credenziali e dati personali dei clienti. Per garantire la segretezza, verrà usata un algoritmo simmetrico (**AEs**), di cui la chiave unica verrà condivisa fra client e server tramite RSA.
 
 ### Protocolli di comunicazione
 
-Il TCP è la soluzione affidabile necessaria a questa architettura. Dato che si possono aprire più socket contemporaneamente, ed essi identificano univocamente il client con cui si parla, il server può registrare gli IP da cui provengono i pacchetti, e **se il pacchetto non possiede l'hash giusto (quindi il mittente è falso), può ignorarlo e mettere l'host in una blacklist**.
+Il TCP è la soluzione affidabile necessaria a questa architettura. Dato che si possono aprire più socket contemporaneamente, ed essi identificano univocamente il client con cui si parla, il server può registrare gli IP da cui provengono i pacchetti, e **garantire la segretezza dei pacchetti attraverso un algoritmo simmetrico**.
 
-Per poter comunicare e potersi accertare che il mittente sia valido, client e server devono stabilire delle specifiche stringhe note soltanto ai due. Queste stringhe saranno scritte nei rispettivi documenti LLD, ma in generale dovranno consistere in:
+### Passaggi per stabilire una connessione sicura
+
+1. Per cominciare la comunicazione, il client dovrà inviare una stringa **"hello"**.
+2. Il server risponderà con la chiave pubblica RSA.
+3. Il client utilizzerà la chiave per cifrare la chiave simmetrica e mandarla al server.
+4. Il server decifra la chiave simmetrica, e rimanda indietro un messaggio di OK.
+5. Il client perciò manda le informazioni criptate.
+
+### Struttura del messaggio
+
+**Ogni sezione della richiesta/risposta dovrà essere separata da un stringa unica di caratteri ($SEP$), in modo da permettere la separazione delle varie sezioni**.
+
+Per poter comunicare e potersi accertare che il mittente sia valido, client e server devono stabilire delle specifiche stringhe note soltanto ai due. In generale dovranno consistere in:
 
 **Client Side**
 
-* **Stringa ID della richiesta**: permette al server di riconoscere per cosa il client sta contattando il server (inserimento, prenotazione, modifica, etc.);
-* **Stringa ID univoca del pacchetto (generata casualmente)**: permette al server di controllare questa stringa con altre di pacchetti già ricevuta, in modo da evitare un eventuale attacco di camuffamento dei pacchetti.
+* Sezione 1.**Stringa ID univoca del pacchetto (generata casualmente)**: permette al server di controllare questa stringa con altre di pacchetti già ricevuta, in modo da evitare un eventuale attacco di camuffamento dei pacchetti.
 
-* **Stringhe username e password dipendenti (solo lato dipendenti)**: ovviamente questa string adovrà essere crittografata così che malintenzionati esterni non possano carpirli.
+* Sezione 2. **Stringa ID della richiesta**: permette al server di riconoscere per cosa il client sta contattando il server (inserimento, prenotazione, modifica, ricerca etc.);
 
-* **Stringhe dati personali cliente**: ovviamente questa string adovrà essere crittografata così che malintenzionati esterni non possano carpirli.
+* Sezione 3 (opzionale).
+**Stringhe username e password dipendenti (solo lato dipendenti)**: ovviamente questa stringa adovrà essere crittografata così che malintenzionati esterni non possano carpirli. 
 
-* **Stringa di annullamento della richiesta**: per i casi in cui la richiesta richiede tempo e si preferisce annullare il processo. Dovrà specificare quale richiesta, quindi attraverso l'ID richiesta, deve essere annullata.
+oppure
+
+**Stringhe dati personali cliente**: ovviamente questa string adovrà essere crittografata con un algoritmo a chiave simmetrica così che malintenzionati esterni non possano carpirli. Una volta arrivata al server verrà decifrata.
+
+I singoli dati vanno divisi con **:** dagli altri. **(es. username:password o e-mail:nome:cognome:indirizzo:citta:cap)**.
+
+* Sezione 4. **Stringa di informazioni**: tutto quello che verrà modificato dalla richiesta oppure i criteri di ricerca.
 
 **Server Side**
 
@@ -98,3 +116,4 @@ Per poter comunicare e potersi accertare che il mittente sia valido, client e se
 Il middle-tier negozierà le trasmissione fra DBMS e client, facendo accedere al DB soltanto ai dipendenti autorizzati.
 
 * **Stringa richiesta dettagli aggiuntivi**: necessaria per la richiesta di recupero username e password o anche del ripristino.
+
