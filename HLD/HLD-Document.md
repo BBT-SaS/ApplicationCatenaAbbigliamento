@@ -3,13 +3,18 @@ Di solito le applicazioni di questo genere sono distribuite in vari Tier. Per ma
 
 Per ridurre al minimo i costi hardware e per rispettare le richieste del cliente, si è preso in considerazione la suddivisione **Two Tier**, ovvero suddividere in due macchine i tre livelli applicativi. Nelle macchine e nei terminali dei negozi verrà installato un **thin client** progettato preferibilmente nel OOPL(Object Oriented Programming Language) Java. A lato server, invece, verranno supportati i livelli di logica applicativa e di accesso ai dati. Questo permetterà al front-end di incidere al minimo sulle prestazioni sul singolo host.
 
+## Struttura a blocchi
+![HLD-clothamatic](https://user-images.githubusercontent.com/43414688/81342986-7a625880-90b4-11ea-976c-b39ce38ca7e1.png)
+
+
+
 ### Quindi in parole povere?
 
 Verrà costruita un'architettura di tipo client/server. Questa scelta rispetto alla più semplice pagina web dinamica permetterà di evitare attacchi da parte di malintenzionati presenti su Internet. La GUI verrà distribuita fra i manager di ogni filiale, a cui sarà affidata la responsabilità di distribuire fra i subordinati il software client.
 
-**Tra le due macchine bisognerà stabilire un protocollo di comunicazione affidabile e che previene ogni perdita di dati**. L'intero team BBT SaS sarà responsabile della stesura del LLD Document per i protocolli di comunicazione
-## Client Side
-Questo è il famoso **front-end**. Dovrà essere:
+## Front-end
+
+Dovrà essere:
 * Il più user-friendly possibile;
 * Suddiviso in due categorie: _lato dipendenti_ e _lato clienti_;
 * Sviluppato attraverso un linguaggio platform-independent;
@@ -17,10 +22,31 @@ Questo è il famoso **front-end**. Dovrà essere:
 * Corredato da manuali e formazione;
 * Testato in ogni sua funzionalità;
 
-La leadership dello sviluppo dell'applicazione per i dipendenti sarà affidata a **Trocchio Lorenzo**, mentre **Bufalo Fabio** si occuperà del lato clienti.
+### Clienti
 
-## Server Side
+L'interfaccia sarà ospitata su dei terminali non molto performanti, quindi dovrà essere il più leggero possibile. 
+
+**Gli scambi di informazioni con il database dovranno essere limitate alla sola pressione del tasto di prenotazione**.
+È necessario comunque confermare l'ordine prima che l'utente proceda con la prenotazione, perciò prima della schermata di avvenuto ordine bisognerà progettare una **pagina di conferma**, dove l'utente può vedere l'ordine che sta effettuando (tutti i dettagli dei prodotti devono essere presenti) e possa ricontrollare le informazioni inserite. **Dovranno essere posti dei vincoli ai valori dell'email e del numero di telefono**.
+
+All'avvio dell'applicazione, che sarà avviata ogni mattina, bisognerà **verificare l'avvenuta connessione del terminale**, e se si è offline segnalare la mancanza di connessione.
+
+**Bufalo Fabio** sarà leader dello sviluppo, e si occuperà della stesura del documento LLD.
+
+### Dipendenti
+
+Questa sezione dovrà avere privilegi in più, perciò dovrà essere progettata in maniera minuziosa. Le credenziali di accesso al server dovranno essere criptate, ma si procede a parlarne nella sezione _Protocolli di comunicazione_.
+Le credenziale potranno essere recuperate attraverso un apposito link che ridirezione l'utente a una pagina dove saranno chieste delle informazioni riservate. **Questa parte del front-end deve essere utilizzata solo connessi a una rete internet**. È necessario ricordare all'utente, qualora sia offline, di connettersi a una rete. **Questo controllo è da fare all'avvio dell'applicazione**.
+
+**Trocchio Lorenzo** sarà leader dello sviluppo, e si occuperà della stesura del documento LLD.
+
+## Back-end
+
+
 Comprenderà il middleware e il back-end, con accesso a un DataBase integrato.
+
+### Middle-tier
+
 Il software che accederà ai dati e risponderà alle risposte del client dovrà essere:
 * Sviluppato attraverso un linguaggio platform-independent, preferibilmente Java;
 * Ottimizzato nei tempi di risposta;
@@ -30,14 +56,64 @@ Il software che accederà ai dati e risponderà alle risposte del client dovrà 
 * Corredato da manuali e formazione;
 * Testato in ogni sua funzionalità;
 
-La leadership dello sviluppo del back-end verrà affidato a **Bafunno Lorenzo**.
+Il server dovrà essere disponibile negli orari lavorativi, e lo stesso dovrà ricevere molte richieste, quindi dovrà gestire molte richieste nello stesso momento. Lo sviluppo dovrà implementare perciò un **sistema di multi-threading** per compiere il lavoro simultaneamente. Allo stesso tempo, dovrà impedire alle molte richieste di generare inconsistenza dei dati, perciò dovrà implementare un **sistema di lock delle risorse**: la soluzione migliore sarebbe usare i monitor.
 
-## Protocolli di comunicazione
-Per poter permettere al client di comunicare con il server e viceversa, è necessario che si instauri una connessione sicura fra i due host. Si escludono con questi criteri i protocolli UDP, HTTP. La soluzione migliore sarebbe utilizzare dei **socket TCP** per la sua _affidabilità, sicurezza e scalabilità_.
+### Database
 
-## Conclusioni finali
-Perciò possiamo concludere che il linguaggio di programmazione da preferire dovrà:
+Si preferisce un database relazionale, dato che il DBMS agevola il compito dello script, monitorando egli stesso l'integrità e la consistenza dei dati. Si presume che i dati non siano di grande dimensione. Soltanto la creazione del database e delle tabelle saranno scritte a mano, per il resto l'inserimento, la cancellazione e la modifica dei dati sarà gestita dal server-side script.
 
-* implementare facilmente i protocolli di comunicazione TCP. 
-* essere platform-independent.
-* ad alto livello e ottimizzato in tutti i sistemi operativi.
+**È necessario che le funzioni siano testati più volte per avere la sicurezza del loro funzionamento ottimale**.
+
+**Bafunno Lorenzo** sarà leader dello sviluppo back-end, e si occuperà della stesura del documento LLD.
+
+## Protocolli di comunicazione e sicurezza
+
+### Sicurezza
+
+Per poter permettere al client di comunicare con il server e viceversa, è necessario che si instauri una connessione sicura fra i due host. Oltre al protocollo affidabile TCP, è necessario cifrare i dati come credenziali e dati personali dei clienti. Per garantire la segretezza, verrà usata un algoritmo simmetrico (**AEs**), di cui la chiave unica verrà condivisa fra client e server tramite RSA.
+
+### Protocolli di comunicazione
+
+Il TCP è la soluzione affidabile necessaria a questa architettura. Dato che si possono aprire più socket contemporaneamente, ed essi identificano univocamente il client con cui si parla, il server può registrare gli IP da cui provengono i pacchetti, e **garantire la segretezza dei pacchetti attraverso un algoritmo simmetrico**.
+
+### Passaggi per stabilire una connessione sicura
+
+1. Per cominciare la comunicazione, il client dovrà inviare una stringa **"hello"**.
+2. Il server risponderà con la chiave pubblica RSA.
+3. Il client utilizzerà la chiave per cifrare la chiave simmetrica e mandarla al server.
+4. Il server decifra la chiave simmetrica, e rimanda indietro un messaggio di OK.
+5. Il client perciò manda le informazioni criptate.
+
+### Struttura del messaggio
+
+**Ogni sezione della richiesta/risposta dovrà essere separata da un stringa unica di caratteri ($SEP$), in modo da permettere la separazione delle varie sezioni**.
+
+Per poter comunicare e potersi accertare che il mittente sia valido, client e server devono stabilire delle specifiche stringhe note soltanto ai due. In generale dovranno consistere in:
+
+**Client Side**
+
+* Sezione 1.**Stringa ID univoca del pacchetto (generata casualmente)**: permette al server di controllare questa stringa con altre di pacchetti già ricevuta, in modo da evitare un eventuale attacco di camuffamento dei pacchetti.
+
+* Sezione 2. **Stringa ID della richiesta**: permette al server di riconoscere per cosa il client sta contattando il server (inserimento, prenotazione, modifica, ricerca etc.);
+
+* Sezione 3 (opzionale).
+**Stringhe username e password dipendenti (solo lato dipendenti)**: ovviamente questa stringa adovrà essere crittografata così che malintenzionati esterni non possano carpirli. 
+
+oppure
+
+**Stringhe dati personali cliente**: ovviamente questa string adovrà essere crittografata con un algoritmo a chiave simmetrica così che malintenzionati esterni non possano carpirli. Una volta arrivata al server verrà decifrata.
+
+I singoli dati vanno divisi con **:** dagli altri. **(es. username:password o e-mail:nome:cognome:indirizzo:citta:cap)**.
+
+* Sezione 4. **Stringa di informazioni**: tutto quello che verrà modificato dalla richiesta oppure i criteri di ricerca.
+
+**Server Side**
+
+* **Stringa di ACK**: per far sapere al client che la richiesta è stata verificata e sta venendo processata.
+* **Stringa di OK**: per far sapere al client che la richiesta è andata a buon fine.
+* **Stringa di errore**: per far sapere al client che la richiesta è errata oppure che ci sono stati errori durante il processo. Se è un problema di dati, bisognerebbe far sapere al client che tipo di errore è.
+
+Il middle-tier negozierà le trasmissione fra DBMS e client, facendo accedere al DB soltanto ai dipendenti autorizzati.
+
+* **Stringa richiesta dettagli aggiuntivi**: necessaria per la richiesta di recupero username e password o anche del ripristino.
+
